@@ -80,8 +80,6 @@ public class Grid extends JPanel implements MouseListener {
 			}
 		}
 		
-		
-
 		repaint();
 	}
 

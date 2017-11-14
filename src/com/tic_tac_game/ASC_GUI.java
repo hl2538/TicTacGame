@@ -1,79 +1,119 @@
 package com.tic_tac_game;
 
+import java.awt.BorderLayout;
+import java.awt.Font;
+import java.awt.GridLayout;
+
 import java.io.IOException;
 
-public class ASC_GUI extends Thread{
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.border.TitledBorder;
+
+
+
+public class ASC_GUI extends JFrame{
 	
-	private static final String LINE = "-";
-	private static final String STRIP = "|";
-	private static final int TYPE_CIRCLE = 1;
-	private static final int TYPE_CROSS = 0;
-	private static final String SHAPE_CIRCLE = "O";
-	private static final String SHAPE_CROSS = "X";
 	public int type;
-	private final int PROTOCOL, POSITION, TYPE;
+	private Tarea[] ta;
+	private JLabel[] jls;
+	private final int PROTOCOL, POSITION, TYPE, MODE;
 	private boolean started;
 	private boolean active;
 	private Client client;
+	private Integer mode;
+	private JPanel board;
+	private JFrame frame;
+
 	
-	private String[] chessboard= {  LINE,LINE,LINE, 
-									LINE,LINE,LINE,
-									LINE,LINE,LINE};
 	
-	
-	public ASC_GUI() throws IOException{
-		client = new Client(this);
+	public ASC_GUI(Integer mode){
+		this.mode = mode;
+		board = new JPanel();
+		board.setLayout(new GridLayout(3, 3));
+		board.setBorder(new TitledBorder("Chessboard"));
+		
+		ta = new Tarea[9];
+		jls = new JLabel[9];
+		for (int i = 0; i < 9; i++) {
+			ta[i] = new Tarea(i, this);
+//			JTextArea jt = new JTextArea();
+//			jt.setText("-");
+//			jt.setFont(new Font("",Font.ITALIC, 50));
+//			jt.setEditable(false);
+			JLabel jl = new JLabel();
+			jls[i] = jl;
+			jl.setText("-");
+			jl.setFont(new Font("",Font.ITALIC, 50));
+			ta[i].add(jl);
+			board.add(ta[i]);
+		}
+		
+		add(board, BorderLayout.CENTER);
+		
+		setTitle("Tic-Tac-Toe");
+		setSize(300, 300);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setLocationRelativeTo(null);
+		setVisible(true);
+		setResizable(true);
+		
+		client = new Client(this, mode);
 		client.start();
-		this.type = -1;
+
 		PROTOCOL = 0;
 		POSITION = 1;
 		TYPE = 2;
+		MODE = 3;
+		type = -1;
 		started = true;
 		active = true;
+
 	}
 	
-	public void run() {
-		ASC_GUI aui;
-		try {
-			aui = new ASC_GUI();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
 	
 	public void send(int position) throws IOException {
 		if (started && active) {
-			int[] data = { Protocol.GAME_UPDATE, position, type};
+			int[] data = { Protocol.GAME_UPDATE, position, type, mode};
 			client.send(data);
 		}
 	}
 	
 	
+	public static void main(String[] args) {
+//		Scanner scan = new Scanner(System.in);
+//		System.out.println("Please choose play mode! \n "
+//				+ "0 is human vs machine;\n"
+//				+ " 1 is machine vs machine");
+//		Integer mode = scan.nextInt();
+		
+		ASC_GUI aui = new ASC_GUI(0);
+		aui.frame.setVisible(true);
+	}
 	
-	public void update(int[] data) {
-		int position = data[0];
-		int type = data[1];
-		if(type == TYPE_CIRCLE) {
-			chessboard[position] = SHAPE_CIRCLE;
+	public void updateGUI(int[] data) {
+		int protocol = data[0];
+		int position = data[1];
+		int type = data[2];
+		
+		if(protocol == Protocol.GAME_JOIN) {
+			this.type = type;
+		}
+		else if(protocol == Protocol.GAME_UPDATE) {
+				if(type == 8) {
+					jls[position].setText("O");
+				}
+				else {
+					jls[position].setText("X");
+				}
+				repaint();
 		}
 		else {
-			chessboard[position] = SHAPE_CROSS;
-		}
-		show();
-	}
-	
-	
-	public void show() {
-		for(int i=0 ; i<chessboard.length; i++) {
-			if(i == chessboard.length-1) {
-				System.out.print(chessboard[i]);
-				break;
-			}
-			if((i+1)%3 == 0) {
-				System.out.print(chessboard[i]+"\n");
-				continue;
-			}
-			System.out.print(chessboard[i]+STRIP);
+			
 		}
 	}
+	
 }

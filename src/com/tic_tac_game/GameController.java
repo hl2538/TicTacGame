@@ -6,24 +6,32 @@ import java.util.Scanner;
 
 public class GameController{
 
-	private Client client;
 	private ASC_GUI aui;
-	
+	private final int PROTOCOL, POSITION, TYPE;
+	private boolean started;
+	private boolean active;
+	private Client client;
 	
 	public GameController() throws IOException{
-		aui = new ASC_GUI();
+		PROTOCOL = 0;
+		POSITION = 1;
+		TYPE = 2;
+		started = true;
+		active = true;
 	}
 	
 	
 	public void send(int position) throws IOException {
-		aui.send(position);
+		if (started && active) {
+			int[] data = { Protocol.GAME_UPDATE, position, aui.type};
+			client.send(data);
+		}
 	}
 	
 	public static void main(String[] args) throws IOException {
+
 		GameController gc = new GameController();
-		System.out.println("please input position:");
-		Scanner scan = new Scanner(System.in);
-		int position = scan.nextInt();
-		gc.send(position);
+		Client client = new Client(gc,0);
+		client.start();
 	}
 }

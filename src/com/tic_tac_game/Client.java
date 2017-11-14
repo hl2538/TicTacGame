@@ -35,11 +35,24 @@ public class Client extends Thread {
 	}
 
 	
-	public Client(ASC_GUI aui) {
-		this.aui = aui;
+	public Client(GameController gc, Integer mode) {
+		this.mode = mode;
+		this.gc = gc;
 		active = true;
 		socket = new Socket();
 	}
+	
+	
+		
+	
+	public Client(ASC_GUI aui, Integer mode) {
+		this.aui = aui;
+		active = true;
+		socket = new Socket();
+		this.mode = mode;
+	}
+	
+	
 	/**
 	 * Sets is client to active or not If this client is inactive, then this
 	 * thread will end.
@@ -90,7 +103,7 @@ public class Client extends Thread {
 							data[i] = input.read();
 						}
 						//gui.update(data);
-						aui.update(data);
+						aui.updateGUI(data);
 					}
 				}
 			}
