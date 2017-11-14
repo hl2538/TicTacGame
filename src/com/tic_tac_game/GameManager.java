@@ -13,7 +13,7 @@ public class GameManager {
 	private Server server;
 	private int[] chessboard;
 	int[] responseData;
-	private final int PROTOCOL, POSITION, TYPE, MODE;
+	private final int PROTOCOL, POSITION, TYPE, MODE, WINNER;
 	private boolean gameStarted;
 	
 	
@@ -22,13 +22,14 @@ public class GameManager {
 		POSITION = 1;
 		TYPE = 2;
 		MODE = 3;
+		WINNER = 3;
 		this.server = server;
 		chessboard = new int[9];
 		for (int i = 0; i < 9; i++) {
 			chessboard[i] = Protocol.TYPE_NONE;
 		}
 		gameStarted = false;
-		responseData = new int[3];
+		responseData = new int[4];
 	}
 
 	

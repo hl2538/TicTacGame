@@ -6,9 +6,11 @@ import java.awt.GridLayout;
 
 import java.io.IOException;
 
+import javax.swing.AbstractButton;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.border.TitledBorder;
@@ -27,6 +29,7 @@ public class ASC_GUI extends JFrame{
 	private Integer mode;
 	private JPanel board;
 	private JFrame frame;
+	private JTextArea textArea;
 
 	
 	
@@ -40,10 +43,7 @@ public class ASC_GUI extends JFrame{
 		jls = new JLabel[9];
 		for (int i = 0; i < 9; i++) {
 			ta[i] = new Tarea(i, this);
-//			JTextArea jt = new JTextArea();
-//			jt.setText("-");
-//			jt.setFont(new Font("",Font.ITALIC, 50));
-//			jt.setEditable(false);
+
 			JLabel jl = new JLabel();
 			jls[i] = jl;
 			jl.setText("-");
@@ -55,11 +55,19 @@ public class ASC_GUI extends JFrame{
 		add(board, BorderLayout.CENTER);
 		
 		setTitle("Tic-Tac-Toe");
-		setSize(300, 300);
+		setSize(500, 500);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLocationRelativeTo(null);
 		setVisible(true);
 		setResizable(true);
+		
+		JPanel textPanel = new JPanel();
+		textArea = new JTextArea("Waiting");
+		textArea.setColumns(5);
+		textArea.setFont(Font.getFont(Font.SANS_SERIF));
+		textPanel.setBorder(new TitledBorder("Game status"));
+		textPanel.add(textArea, BorderLayout.CENTER);
+		add(textPanel, BorderLayout.SOUTH);
 		
 		client = new Client(this, mode);
 		client.start();
@@ -111,8 +119,25 @@ public class ASC_GUI extends JFrame{
 				}
 				repaint();
 		}
-		else {
-			
+		else if(protocol == Protocol.GAME_RESULT){
+			if (type == Protocol.GAME_WIN) {
+				textArea.setText("Win");
+				JOptionPane.showMessageDialog(null,
+						"You win!!\nCongratulations!!", "Tic-Tac-Toe",
+						JOptionPane.INFORMATION_MESSAGE);
+			} else if (type == Protocol.GAME_TIE) {
+				textArea.setText("Tie");
+				JOptionPane.showMessageDialog(null,
+						"You and your opponent are well-matched!!\nHope you come back again soon!!", "Tic-Tac-Toe",
+						JOptionPane.INFORMATION_MESSAGE);
+			} else {
+				textArea.setText("Lose");
+				JOptionPane.showMessageDialog(null,
+						"You lose!!\nBut you are still good!!", "Tic-Tac-Toe",
+						JOptionPane.INFORMATION_MESSAGE);
+			}
+			client.setActive(false);
+			this.dispose();
 		}
 	}
 	

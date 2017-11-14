@@ -19,7 +19,6 @@ public class Client extends Thread {
 	private DataOutputStream output;
 	private GUI gui;
 	private ASC_GUI aui;
-	private GameController gc;
 	private Integer mode;
 	
 	public Client(GUI g, Integer mode) throws IOException {
@@ -33,15 +32,6 @@ public class Client extends Thread {
 		active = true;
 		socket = new Socket();
 	}
-
-	
-	public Client(GameController gc, Integer mode) {
-		this.mode = mode;
-		this.gc = gc;
-		active = true;
-		socket = new Socket();
-	}
-	
 	
 		
 	

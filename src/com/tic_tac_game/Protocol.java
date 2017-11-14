@@ -21,4 +21,8 @@ public final class Protocol {
 	
 	public static final int GAME_UPDATE = 11;
 	public static final int GAME_TOKEN = 13;
+	
+	public static final int WINNER_HUMAN = 100;
+	public static final int WINNER_MACHINE = -100;
+	public static final int WINNER_NOBODY = 50;
 }
