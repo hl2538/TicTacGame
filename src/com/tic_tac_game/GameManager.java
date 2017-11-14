@@ -57,18 +57,13 @@ public class GameManager {
 					responseData[POSITION] = data[POSITION];
 					responseData[TYPE] = 9;
 					server.broadcast(responseData);
-				}
-				if(isFull()) {
 					int result = checkGameResult();
 					responseData[PROTOCOL] = Protocol.GAME_RESULT;
 					responseData[POSITION] = -1;
 					
 					if (result == 1) { // Check whether there's a winner or not
 						responseData[TYPE] = Protocol.GAME_WIN;
-						server.broadcast(responseData);
-
-						responseData[TYPE] = Protocol.GAME_LOSE;
-						
+						responseData[WINNER] = Protocol.WINNER_HUMAN;
 						server.broadcast(responseData);
 					}
 					else if (result == 2 && data[PROTOCOL] != Protocol.GAME_JOIN) {
@@ -79,8 +74,8 @@ public class GameManager {
 						server.broadcast(responseData);
 						
 					}
-					break;
 				}
+
 				while(true) {
 					Integer machinePosition = pickPosition(9);
 					if(chessboard[machinePosition] == Protocol.TYPE_NONE) {
@@ -97,19 +92,16 @@ public class GameManager {
 						
 						if (result == 1) { // Check whether there's a winner or not
 							responseData[TYPE] = Protocol.GAME_WIN;
+							responseData[WINNER] = Protocol.WINNER_MACHINE;
 							server.broadcast(responseData);
 
-							responseData[TYPE] = Protocol.GAME_LOSE;
-							
-							server.broadcast(responseData);
 						}
 						else if (result == 2 && data[PROTOCOL] != Protocol.GAME_JOIN) {
 							
 							System.out.println("TIE");
 							responseData[TYPE] = Protocol.GAME_TIE;
-							
+							responseData[WINNER] = Protocol.WINNER_NOBODY;
 							server.broadcast(responseData);
-							
 						}
 						break;
 					}

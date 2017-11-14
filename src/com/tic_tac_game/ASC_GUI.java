@@ -106,6 +106,7 @@ public class ASC_GUI extends JFrame{
 		int protocol = data[0];
 		int position = data[1];
 		int type = data[2];
+		int winner = data[3];
 		
 		if(protocol == Protocol.GAME_JOIN) {
 			this.type = type;
@@ -120,17 +121,17 @@ public class ASC_GUI extends JFrame{
 				repaint();
 		}
 		else if(protocol == Protocol.GAME_RESULT){
-			if (type == Protocol.GAME_WIN) {
+			if (type == Protocol.GAME_WIN && winner == Protocol.WINNER_HUMAN) {
 				textArea.setText("Win");
 				JOptionPane.showMessageDialog(null,
 						"You win!!\nCongratulations!!", "Tic-Tac-Toe",
 						JOptionPane.INFORMATION_MESSAGE);
-			} else if (type == Protocol.GAME_TIE) {
+			} else if (type == Protocol.GAME_TIE && winner == Protocol.WINNER_NOBODY) {
 				textArea.setText("Tie");
 				JOptionPane.showMessageDialog(null,
 						"You and your opponent are well-matched!!\nHope you come back again soon!!", "Tic-Tac-Toe",
 						JOptionPane.INFORMATION_MESSAGE);
-			} else {
+			} else if(type == Protocol.GAME_WIN && winner == Protocol.WINNER_MACHINE) {
 				textArea.setText("Lose");
 				JOptionPane.showMessageDialog(null,
 						"You lose!!\nBut you are still good!!", "Tic-Tac-Toe",
