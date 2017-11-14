@@ -57,7 +57,29 @@ public class GameManager {
 					responseData[TYPE] = 9;
 					server.broadcast(responseData);
 				}
-				if(isFull())break;
+				if(isFull()) {
+					int result = checkGameResult();
+					responseData[PROTOCOL] = Protocol.GAME_RESULT;
+					responseData[POSITION] = -1;
+					
+					if (result == 1) { // Check whether there's a winner or not
+						responseData[TYPE] = Protocol.GAME_WIN;
+						server.broadcast(responseData);
+
+						responseData[TYPE] = Protocol.GAME_LOSE;
+						
+						server.broadcast(responseData);
+					}
+					else if (result == 2 && data[PROTOCOL] != Protocol.GAME_JOIN) {
+						
+						System.out.println("TIE");
+						responseData[TYPE] = Protocol.GAME_TIE;
+						
+						server.broadcast(responseData);
+						
+					}
+					break;
+				}
 				while(true) {
 					Integer machinePosition = pickPosition(9);
 					if(chessboard[machinePosition] == Protocol.TYPE_NONE) {
@@ -68,6 +90,26 @@ public class GameManager {
 						responseData[POSITION] = machinePosition;
 						responseData[TYPE] = 8;
 						server.broadcast(responseData);
+						int result = checkGameResult();
+						responseData[PROTOCOL] = Protocol.GAME_RESULT;
+						responseData[POSITION] = -1;
+						
+						if (result == 1) { // Check whether there's a winner or not
+							responseData[TYPE] = Protocol.GAME_WIN;
+							server.broadcast(responseData);
+
+							responseData[TYPE] = Protocol.GAME_LOSE;
+							
+							server.broadcast(responseData);
+						}
+						else if (result == 2 && data[PROTOCOL] != Protocol.GAME_JOIN) {
+							
+							System.out.println("TIE");
+							responseData[TYPE] = Protocol.GAME_TIE;
+							
+							server.broadcast(responseData);
+							
+						}
 						break;
 					}
 				}
@@ -81,26 +123,7 @@ public class GameManager {
 			}
 
 			
-			int result = checkGameResult();
-			responseData[PROTOCOL] = Protocol.GAME_RESULT;
-			responseData[POSITION] = -1;
-			
-			if (result == 1) { // Check whether there's a winner or not
-				responseData[TYPE] = Protocol.GAME_WIN;
-				server.broadcast(responseData);
 
-				responseData[TYPE] = Protocol.GAME_LOSE;
-				
-				server.broadcast(responseData);
-			}
-			else if (result == 2 && data[PROTOCOL] != Protocol.GAME_JOIN) {
-				
-				System.out.println("TIE");
-				responseData[TYPE] = Protocol.GAME_TIE;
-				
-				server.broadcast(responseData);
-				
-			}
 		}
 		else {
 			switch (data[PROTOCOL]) {

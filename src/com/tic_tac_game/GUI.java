@@ -21,7 +21,7 @@ public class GUI extends JFrame {
 	private int type;
 	private boolean started, active;
 	private final int PROTOCOL, POSITION, TYPE;
-	public Integer mode;
+	private Integer mode;
 	
 	public GUI(Integer mode) throws IOException {
 		this.mode = mode;
@@ -66,8 +66,7 @@ public class GUI extends JFrame {
 
 	public void send(int position) throws IOException {
 		if (started && active) {
-			
-			int[] data = { Protocol.GAME_UPDATE, position, type , mode};
+			int[] data = { Protocol.GAME_UPDATE, position, type ,mode};
 			client.send(data);
 		}
 	}

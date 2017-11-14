@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.Scanner;
 
 import javax.swing.JOptionPane;
 
@@ -17,7 +18,9 @@ public class Client extends Thread {
 	private DataInputStream input;
 	private DataOutputStream output;
 	private GUI gui;
-	public Integer mode;
+	private ASC_GUI aui;
+	private GameController gc;
+	private Integer mode;
 	
 	public Client(GUI g, Integer mode) throws IOException {
 		this.mode = mode;
@@ -25,7 +28,18 @@ public class Client extends Thread {
 		socket = new Socket();
 		gui = g;
 	}
+	
+	public Client() throws IOException{
+		active = true;
+		socket = new Socket();
+	}
 
+	
+	public Client(ASC_GUI aui) {
+		this.aui = aui;
+		active = true;
+		socket = new Socket();
+	}
 	/**
 	 * Sets is client to active or not If this client is inactive, then this
 	 * thread will end.
@@ -75,7 +89,8 @@ public class Client extends Thread {
 						for (int i = 0; i < data.length; i++) {
 							data[i] = input.read();
 						}
-						gui.update(data);
+						//gui.update(data);
+						aui.update(data);
 					}
 				}
 			}
@@ -96,7 +111,7 @@ public class Client extends Thread {
 		input = new DataInputStream(socket.getInputStream());
 		System.out.println("Connected to Server");
 		
-		int[] gameJoinRequest = { Protocol.GAME_JOIN, -1, -1 ,mode};
+		int[] gameJoinRequest = { Protocol.GAME_JOIN, -1, -1, mode};
 		send(gameJoinRequest);
 	}
 
