@@ -32,7 +32,7 @@ public class Server extends Thread {
 		close = true;
 	}
 
-	public void receive(int[] data) throws IOException, InterruptedException {
+	public void receive(int[] data) throws Exception {
 		gameManager.calculate(data);
 	}
 

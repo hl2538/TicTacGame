@@ -51,13 +51,17 @@ public class ClientHandler extends Thread {
 						for(int i=0; i<data.length; i++) {
 							data[i] = input.read();
 						}
-						server.receive(data);
+						try {
+							server.receive(data);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
 					}
 				}
 			}
 			socket.close();
 			server.remove(this);
-		} catch (IOException | InterruptedException e) {
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			try {
