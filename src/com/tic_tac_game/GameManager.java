@@ -42,12 +42,6 @@ public class GameManager {
 	}
 
 	
-	
-	/**
-	 * human versus machine controller
-	 * @param data
-	 * @throws Exception 
-	 */
 	public void calculate(int[] data) throws Exception {
 		if(data[MODE]==0) {
 			switch (data[PROTOCOL]) {
@@ -160,13 +154,6 @@ public class GameManager {
 	}
 	
 	
-
-
-	/**
-	 * Checks whether there's anyone has win this game or not.
-	 * 
-	 * @throws IOException
-	 */
 	private int checkGameResult() throws IOException {
 		boolean tie = true;
 		
@@ -317,7 +304,7 @@ public class GameManager {
 				responseData[PROTOCOL] = Protocol.GAME_RESULT;
 				responseData[POSITION] = -1;
 				
-				if (result == 1) { // Check whether there's a winner or not
+				if (result == 1) { 
 					responseData[TYPE] = Protocol.GAME_WIN;
 					responseData[WINNER] = Protocol.WINNER_MACHINE;
 					server.broadcast(responseData);

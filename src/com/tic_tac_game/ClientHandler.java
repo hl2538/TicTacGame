@@ -25,9 +25,9 @@ public class ClientHandler extends Thread {
 	}
 	
 	public void send(int[] data) throws IOException {
-		output.writeByte(1); //Connection test byte
+		output.writeByte(1); 
 		output.write(data.length);
-		for(int i=0; i<data.length; i++) { //Main data
+		for(int i=0; i<data.length; i++) {
 			output.write(data[i]);
 		}
 		output.flush();
@@ -41,12 +41,12 @@ public class ClientHandler extends Thread {
 		try {
 			byte connectionTest;
 			while(active) {
-				if((connectionTest = input.readByte()) == -1) { //Connection test
+				if((connectionTest = input.readByte()) == -1) {
 					System.out.println("Client disconnected");
 					active = false;
 				}
 				else {
-					if(connectionTest > (byte) 0) { //Read main data
+					if(connectionTest > (byte) 0) {
 						int[] data = new int[input.read()];
 						for(int i=0; i<data.length; i++) {
 							data[i] = input.read();
@@ -62,12 +62,10 @@ public class ClientHandler extends Thread {
 			socket.close();
 			server.remove(this);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			try {
 				socket.close();
 			} catch (IOException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 			server.remove(this);

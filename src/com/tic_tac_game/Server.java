@@ -49,7 +49,9 @@ public class Server extends Thread {
 		try {
 			while (!close) {
 				if (active) {
+					
 					Socket s = socket.accept();
+					System.out.println("Server started! Listen on port 707");
 					ClientHandler client = new ClientHandler(this, s);
 					clients.add(client);
 					client.start();

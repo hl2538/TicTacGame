@@ -41,10 +41,10 @@ public class Client extends Thread {
 	}
 
 	public void send(int[] data) throws IOException {
-		output.writeByte(1); // Connection test
+		output.writeByte(1);
 		output.write(data.length);
 		System.out.println(data.length);
-		for (int i = 0; i < data.length; i++) { // Main data
+		for (int i = 0; i < data.length; i++) {
 			output.write(data[i]);
 		}
 		output.flush();
