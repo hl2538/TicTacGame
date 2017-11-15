@@ -2,6 +2,7 @@ package com.tic_tac_game;
 
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Random;
 
@@ -14,6 +15,7 @@ public class GameManager {
 	
 	private Server server;
 	private int[] chessboard;
+	private int[] record;
 	int[] responseData;
 	private final int PROTOCOL, POSITION, TYPE, MODE, WINNER;
 	private boolean gameStarted;
@@ -28,8 +30,12 @@ public class GameManager {
 		WINNER = 3;
 		this.server = server;
 		chessboard = new int[9];
+		record = new int[9];
 		for (int i = 0; i < 9; i++) {
 			chessboard[i] = Protocol.TYPE_NONE;
+		}
+		for (int i = 0; i < 9; i++) {
+			record[i] = Protocol.TYPE_NONE;
 		}
 		gameStarted = false;
 		responseData = new int[4];
@@ -56,10 +62,13 @@ public class GameManager {
 			case Protocol.GAME_UPDATE:
 				if (chessboard[data[POSITION]] == Protocol.TYPE_NONE) {
 					chessboard[data[POSITION]] = data[TYPE];
+					record[data[POSITION]] = data[TYPE];
+					
 					responseData[PROTOCOL] = data[PROTOCOL];
 					responseData[POSITION] = data[POSITION];
 					responseData[TYPE] = 9;
 					server.broadcast(responseData);
+					showIt();
 					int result = checkGameResult();
 					responseData[PROTOCOL] = Protocol.GAME_RESULT;
 					responseData[POSITION] = -1;
@@ -78,18 +87,20 @@ public class GameManager {
 						
 					}
 				}
-
+				
+				
 				while(true) {
 					machine = new AIPlayer();
 					Integer machinePosition = machine.xminimax(chessboard, 8);
 					if(chessboard[machinePosition] == Protocol.TYPE_NONE) {
 						
-						chessboard[machinePosition] = 8;
-						
+						chessboard[machinePosition] = Protocol.TYPE_CIRCLE;
+						record[machinePosition] = Protocol.TYPE_CIRCLE;
 						responseData[PROTOCOL] = Protocol.GAME_UPDATE;
 						responseData[POSITION] = machinePosition;
 						responseData[TYPE] = 8;
 						server.broadcast(responseData);
+						showIt();
 						
 						
 						int result = checkGameResult();
@@ -128,6 +139,7 @@ public class GameManager {
 			machine = new AIPlayer();
 			switch (data[PROTOCOL]) {
 				case Protocol.GAME_JOIN:
+					showIt();
 					responseData[PROTOCOL] = Protocol.GAME_STARTED;
 					responseData[POSITION] = -1;
 					responseData[TYPE] = -1;
@@ -143,6 +155,7 @@ public class GameManager {
 							responseData[TYPE] = shape;
 							flag = !flag;
 							server.broadcast(responseData);
+							showIt();
 							Thread.sleep(1000);
 							
 							
@@ -285,4 +298,34 @@ public class GameManager {
 		}
 		return true;
 	}
+	
+	public void showIt() {
+		String s ="";
+		for(int i =0; i<chessboard.length; i++) {
+			if(chessboard[i] == Protocol.TYPE_NONE) {
+				s = s+"-";
+			}
+			else if(chessboard[i] == Protocol.TYPE_CROSS) {
+				s = s+ "x";
+			}
+			else{
+				s = s+ "o";
+			}
+			if((i+1)%3 == 0) {
+				s = s+"\n";
+			}
+		}
+		System.out.println(s);
+	}
+	
+	public void print() {
+		for(int i= 0; i<chessboard.length; i++) {
+			if((i+1)%3 == 0) {
+				System.out.print(chessboard[i]);
+				System.out.print("\n");
+			}
+			System.out.print(chessboard[i]);
+		}
+	}
+	
 }

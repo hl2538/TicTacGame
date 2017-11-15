@@ -7,8 +7,6 @@ import java.awt.GridLayout;
 import java.io.IOException;
 import java.util.Scanner;
 
-import javax.swing.AbstractButton;
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -80,7 +78,7 @@ public class ASC_GUI extends JFrame{
 		POSITION = 1;
 		TYPE = 2;
 		MODE = 3;
-		type = -1;
+		type = 9;
 		started = true;
 		active = true;
 
@@ -111,6 +109,7 @@ public class ASC_GUI extends JFrame{
 		int position = data[1];
 		int type = data[2];
 		int winner = data[3];
+
 		
 		if(protocol == Protocol.GAME_JOIN) {
 			this.type = type;
@@ -118,6 +117,7 @@ public class ASC_GUI extends JFrame{
 		else if(protocol == Protocol.GAME_UPDATE) {
 				if(type == 8) {
 					jls[position].setText("O");
+
 				}
 				else {
 					jls[position].setText("X");
@@ -141,6 +141,7 @@ public class ASC_GUI extends JFrame{
 						"You lose!!\nBut you are still good!!", "Tic-Tac-Toe",
 						JOptionPane.INFORMATION_MESSAGE);
 			}
+
 			client.setActive(false);
 			this.dispose();
 		}

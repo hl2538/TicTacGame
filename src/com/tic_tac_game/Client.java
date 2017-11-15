@@ -27,7 +27,6 @@ public class Client extends Thread {
 		socket = new Socket();
 	}
 	
-		
 	
 	public Client(ASC_GUI aui, Integer mode) {
 		this.aui = aui;
@@ -64,7 +63,6 @@ public class Client extends Thread {
 					active = false;
 				} else {
 					if (connectionTest > (byte) 0) { 
-						System.out.println("c");
 						int[] data = new int[input.read()];
 						for (int i = 0; i < data.length; i++) {
 							data[i] = input.read();
