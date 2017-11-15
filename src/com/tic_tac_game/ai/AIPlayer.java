@@ -2,25 +2,27 @@ package com.tic_tac_game.ai;
 
 import java.util.Random;
 
+import com.tic_tac_game.Protocol;
+
 public class AIPlayer {
 	
-	static final int INFINITY = 100 ;   // 表示无穷的值  
-	static final int WIN = +INFINITY ;   // MAX的最大利益为正无穷  
-	static final int LOSE = -INFINITY ;   // MAX的最小得益（即MIN的最大得益）为负无穷  
-	static final int DOUBLE_LINK = INFINITY / 2 ;   // 如果同一行、列或对角上连续有两个，赛点  
-	static final int INPROGRESS = 1 ;   // 仍可继续下（没有胜出或和局）  
-	static final int DRAW = 0 ;   // 和局  
+	static final int INFINITY = 100 ;   
+	static final int WIN = +INFINITY ;   
+	static final int LOSE = -INFINITY ;   
+	static final int DOUBLE_LINK = INFINITY / 2 ;   
+	static final int INPROGRESS = 1 ;   
+	static final int DRAW = 0 ;   
 	static final int CIRCLE = -1;
 	static final int CROSS = 1;
 	static final int [][] WIN_STATUS =   {  
-										      {   0, 1, 2 },  
+										      { 0, 1, 2 },  
 										      { 3, 4, 5 },  
 										      { 6, 7, 8 },  
 										      { 0, 3, 6 },  
 										      { 1, 4, 7 },  
 										      { 2, 5, 8 },  
 										      { 0, 4, 8 },  
-										      { 2, 4, 6   }  
+										      { 2, 4, 6 }  
 										};
 	
 	
@@ -32,10 +34,9 @@ public class AIPlayer {
 		
 	
 	};  
-		/** 
-		 * 估值函数，提供一个启发式的值，决定了游戏AI的高低 
-		 */  
-	public int gameState ( char[] board ) {  
+	
+	
+	public int gameState ( int[] board ) {  
 	       int result = INPROGRESS ;  
 	       boolean isFull = true ;
 	       
@@ -44,8 +45,8 @@ public class AIPlayer {
 	       
 	       // is game over?  
 	       for ( int pos=0; pos<9; pos++){  
-	             char chess = board[pos];  
-	             if ( chess == '\0'){  
+	             int chess = board[pos];  
+	             if ( chess == Protocol.TYPE_NONE){  
 	                  isFull = false ;  
 	            } else {  
 	                  sum += chess;  
@@ -53,26 +54,23 @@ public class AIPlayer {
 	            }  
 	      }  
 	        
-	       // 如果是初始状态，则使用开局库  
-	       boolean isInitial = (sum== CROSS ||sum== CIRCLE );  
+	       boolean isInitial = (sum==Protocol.TYPE_CROSS||sum==Protocol.TYPE_CIRCLE );  
 	       if (isInitial){  
 	             return (sum== CROSS ?1:-1)*INITIAL_POS_VALUE[index];  
 	      }  
 	        
 	       // is Max win/lose?  
 	       for ( int[]status : WIN_STATUS ){  
-	             char   chess = board[status[0]];  
-	             if (chess== '\0' ){  
+	             int chess = board[status[0]];  
+	             if (chess== Protocol.TYPE_NONE ){  
 	                   break ;  
 	            }  
-	             int   i = 1;  
-	             for (; i<status.length; i++){  
-	                   if (board[status[i]]!=chess){  
-	                         break ;  
-	                  }  
+	            int i = 1;
+	            for(; i<status.length; i++){  
+                   if (board[status[i]]!=chess)break ;  
 	            }  
 	             if (i==status.length){  
-	                  result = chess== CROSS ? WIN : LOSE ;  
+	                  result = chess== Protocol.TYPE_CROSS ? WIN : LOSE ;  
 	                   break ;  
 	            }  
 	      }  
@@ -86,24 +84,24 @@ public class AIPlayer {
 	                   // check double link  
 	                   // finds[0]->'x', finds[1]->'o'  
 	                   int [] finds =   new   int [2];  
-	                   for ( int [] status :   WIN_STATUS ){  
-	                         char   chess =  '\0' ;  
-	                         boolean   hasEmpty =   false ;  
+	                   for ( int [] status : WIN_STATUS ){  
+	                         int chess = Protocol.TYPE_NONE;  
+	                         boolean hasEmpty = false ;  
 	                         int   count = 0;  
-	                         for ( int   i=0; i<status.length; i++){  
-	                               if (board[status[i]]=='\0'){  
-	                                    hasEmpty =   true ;  
-	                              } else {  
-	                                     if (chess== '\0' ){  
+	                         for(int i=0; i<status.length; i++){  
+	                               if (board[status[i]]==Protocol.TYPE_NONE){  
+	                                    hasEmpty = true ;  
+	                               }else {  
+	                                     if (chess== Protocol.TYPE_NONE ){  
 	                                          chess = board[status[i]];  
 	                                    }  
 	                                     if (board[status[i]]==chess){  
 	                                          count++;  
 	                                    }  
 	                              }  
-	                        }  
+	                         }  
 	                         if (hasEmpty && count>1){  
-	                               if (chess== '0' ){  
+	                               if (chess == Protocol.TYPE_NONE ){  
 	                                    finds[0]++;  
 	                              } else {  
 	                                    finds[1]++;  
@@ -123,15 +121,15 @@ public class AIPlayer {
 		}  
 	
 	
-	public   int   minimax( char [] board,   int   depth){  
+	public   int   minimax( int[] board, int depth){   //depth = 6; max = 8
 	       int [] bestMoves =   new   int [9];  
 	       int   index = 0;  
 	        
 	       int   bestValue = - INFINITY ;  
 	       for ( int   pos=0; pos<9; pos++){  
 	              
-	             if (board[pos]== '\0'){  
-	                  board[pos] =  'X' ;  
+	             if (board[pos]== Protocol.TYPE_NONE){  
+	                  board[pos] =  Protocol.TYPE_CROSS ;  
 	                    
 	                   int   value = min(board, depth, - INFINITY , + INFINITY );  
 	                   if (value>bestValue){  
@@ -144,7 +142,7 @@ public class AIPlayer {
 	                        bestMoves[index] = pos;  
 	                  }  
 	                    
-	                  board[pos] = '\0' ;  
+	                  board[pos] = Protocol.TYPE_NONE ;  
 	            }  
 	              
 	      }  
@@ -155,10 +153,8 @@ public class AIPlayer {
 	       return   bestMoves[index];  
 	        
 	}  
-	/** 
-	 * 对于'x'，估值越大对其越有利 
-	 */  
-	public   int   max( char [] board,   int   depth,   int   alpha,   int   beta){  
+
+	public   int   max( int [] board,   int   depth,   int   alpha,   int   beta){  
 	        
 	       int   evalValue =   gameState (board);  
 	        
@@ -173,15 +169,15 @@ public class AIPlayer {
 	       int   bestValue = - INFINITY ;  
 	       for ( int   pos=0; pos<9; pos++){  
 	              
-	             if (board[pos]== '\0' ){  
+	             if (board[pos]== Protocol.TYPE_NONE ){  
 	                   // try  
-	                  board[pos] =  'X' ;  
+	                  board[pos] =  Protocol.TYPE_CROSS ;  
 	                    
 	                   //   maximixing  
 	                  bestValue = Math. max (bestValue, min(board, depth-1, Math. max (bestValue, alpha), beta));  
 	                    
 	                   // reset  
-	                  board[pos] =  '\0' ;  
+	                  board[pos] =  Protocol.TYPE_NONE;  
 	            }  
 	              
 	      }  
@@ -189,16 +185,14 @@ public class AIPlayer {
 	       return   evalValue;  
 	        
 	}  
-	/** 
-	 * 对于'o'，估值越小对其越有利 
-	 */  
-	public   int   min( char [] board,   int   depth,   int   alpha,   int   beta){  
+
+	public   int   min( int [] board,   int   depth,   int   alpha,   int   beta){  
 	        
-	       int   evalValue =   gameState (board);  
+	       int evalValue = gameState (board);  
 	        
-	       boolean   isGameOver = (evalValue== WIN   || evalValue== LOSE   || evalValue== DRAW );  
+	       boolean   isGameOver = (evalValue== WIN || evalValue== LOSE || evalValue== DRAW );  
 	       if (alpha>=beta){  
-	             return   evalValue;  
+	             return  evalValue;  
 	      }  
 	       // try  
 	       if (depth==0 || isGameOver || alpha>=beta){  
@@ -208,15 +202,15 @@ public class AIPlayer {
 	       int   bestValue = + INFINITY ;  
 	       for ( int   pos=0; pos<9; pos++){  
 	              
-	             if (board[pos]== '\0' ){  
+	             if (board[pos]== Protocol.TYPE_NONE){  
 	                   // try  
-	                  board[pos] =   'O';  
+	                  board[pos] =  Protocol.TYPE_CIRCLE;  
 	                    
 	                   //   minimixing  
 	                  bestValue = Math.min(bestValue, max(board, depth-1, alpha, Math.min(bestValue, beta)));  
 	                    
 	                   // reset  
-	                  board[pos] =  '\0' ;  
+	                  board[pos] = Protocol.TYPE_NONE ;  
 	            }  
 	              
 	      }  
