@@ -5,6 +5,7 @@ import java.awt.Font;
 import java.awt.GridLayout;
 
 import java.io.IOException;
+import java.util.Scanner;
 
 import javax.swing.AbstractButton;
 import javax.swing.JButton;
@@ -92,13 +93,13 @@ public class ASC_GUI extends JFrame{
 	
 	
 	public static void main(String[] args) {
-//		Scanner scan = new Scanner(System.in);
-//		System.out.println("Please choose play mode! \n "
-//				+ "0 is human vs machine;\n"
-//				+ " 1 is machine vs machine");
-//		Integer mode = scan.nextInt();
+		Scanner scan = new Scanner(System.in);
+		System.out.println("Please choose play mode! \n "
+				+ "0 is human vs machine;\n"
+				+ " 1 is machine vs machine");
+		Integer mode = scan.nextInt();
 		
-		ASC_GUI aui = new ASC_GUI(0);
+		ASC_GUI aui = new ASC_GUI(mode);
 		aui.frame.setVisible(true);
 	}
 	

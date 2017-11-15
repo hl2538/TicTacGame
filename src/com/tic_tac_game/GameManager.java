@@ -137,6 +137,7 @@ public class GameManager {
 						shape = turn ==true? 9:8;
 						if(isEmpty()) {
 							chessboard[firstPosition] = shape;
+							
 							responseData[PROTOCOL] = Protocol.GAME_UPDATE;
 							responseData[POSITION] = firstPosition;
 							responseData[TYPE] = shape;
