@@ -18,56 +18,25 @@ public class Server extends Thread {
 
 	Server() throws IOException {
 		gameManager = new GameManager(this);
-		socket = new ServerSocket(8081);
+		socket = new ServerSocket(707);
 		clients = new LinkedList<ClientHandler>();
 		active = true;
 		close = false;
 	}
 
-	/**
-	 * Decides Server can accept connection from client or not.
-	 * 
-	 * @param b
-	 *            - true if can accept connection, false if cannot accept
-	 *            connection.
-	 */
 	public void setActive(boolean b) {
 		active = b;
 	}
 
-	/**
-	 * Closes this server.
-	 */
 	public void close() {
 		close = true;
 	}
 
-	/**
-	 * Receives data from Client Handler and pass it to GameManager for
-	 * calculation.
-	 * 
-	 * @param data
-	 *            - the data to be calculated.
-	 * @throws IOException
-	 * @throws InterruptedException 
-	 */
 	public void receive(int[] data) throws IOException, InterruptedException {
 		gameManager.calculate(data);
 	}
 
-	/**
-	 * Broadcasts data to ClientHandler.
-	 * 
-	 * @param id
-	 *            - the identification number of ClientHandler. -1 for
-	 *            "don't care", otherwise, send response to specific
-	 *            ClientHandler.
-	 * @param protocol
-	 *            - the protocol corresponding to the value
-	 * @param value
-	 *            - The data to be broadcasted
-	 * @throws IOException
-	 */
+
 	public void broadcast(int[] data) throws IOException {
 		System.out.println("Server broadcasted:"+ "\tprotocol = "
 				+ data[0] + "\tposition = " + data[1] + "\ttype = " + data[2]
@@ -76,12 +45,6 @@ public class Server extends Thread {
 
 	}
 
-
-	/**
-	 * Main part of this Thread Keep receiving data from Client while this
-	 * Server is active Finish and close this Server while the close boolean is
-	 * true
-	 */
 	public void run() {
 		try {
 			while (!close) {
@@ -109,13 +72,6 @@ public class Server extends Thread {
 		clients.remove(c);
 	}
 	
-
-	/**
-	 * Entry of program.
-	 * 
-	 * @param args
-	 * @throws IOException
-	 */
 	public static void main(String[] args) throws IOException {
 		Server server = new Server();
 		server.start();

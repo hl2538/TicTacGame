@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Random;
 
+import com.tic_tac_game.ai.AIPlayer;
+
 
 
 public class GameManager {
@@ -15,6 +17,7 @@ public class GameManager {
 	int[] responseData;
 	private final int PROTOCOL, POSITION, TYPE, MODE, WINNER;
 	private boolean gameStarted;
+	AIPlayer machine;
 	
 	
 	public GameManager(Server server) {
@@ -41,7 +44,7 @@ public class GameManager {
 	 * @throws InterruptedException 
 	 */
 	public void calculate(int[] data) throws IOException, InterruptedException {
-		if(data[MODE] == 0) {
+		if(data[MODE]==0) {
 			switch (data[PROTOCOL]) {
 			case Protocol.GAME_JOIN:
 					responseData[PROTOCOL] = Protocol.GAME_STARTED;
@@ -61,12 +64,12 @@ public class GameManager {
 					responseData[PROTOCOL] = Protocol.GAME_RESULT;
 					responseData[POSITION] = -1;
 					
-					if (result == 1) { // Check whether there's a winner or not
+					if (result == 1) {
 						responseData[TYPE] = Protocol.GAME_WIN;
 						responseData[WINNER] = Protocol.WINNER_HUMAN;
 						server.broadcast(responseData);
 					}
-					else if (result == 2 && data[PROTOCOL] != Protocol.GAME_JOIN) {
+					else if (result == 2) {
 						
 						System.out.println("TIE");
 						responseData[TYPE] = Protocol.GAME_TIE;
@@ -77,7 +80,8 @@ public class GameManager {
 				}
 
 				while(true) {
-					Integer machinePosition = pickPosition(9);
+					machine = new AIPlayer();
+					Integer machinePosition = machine.xminimax(chessboard, 8);
 					if(chessboard[machinePosition] == Protocol.TYPE_NONE) {
 						
 						chessboard[machinePosition] = 8;
@@ -86,11 +90,13 @@ public class GameManager {
 						responseData[POSITION] = machinePosition;
 						responseData[TYPE] = 8;
 						server.broadcast(responseData);
+						
+						
 						int result = checkGameResult();
 						responseData[PROTOCOL] = Protocol.GAME_RESULT;
 						responseData[POSITION] = -1;
 						
-						if (result == 1) { // Check whether there's a winner or not
+						if (result == 1) {
 							responseData[TYPE] = Protocol.GAME_WIN;
 							responseData[WINNER] = Protocol.WINNER_MACHINE;
 							server.broadcast(responseData);
@@ -114,81 +120,60 @@ public class GameManager {
 				System.out.println("Default");
 				break;
 			}
-
-			
-
 		}
-		else {
+		else{  //machine versus machine
+			boolean flag = true;
+			int shape = 0;
+			Integer machinePosition;
+			machine = new AIPlayer();
 			switch (data[PROTOCOL]) {
-			case Protocol.GAME_JOIN:
+				case Protocol.GAME_JOIN:
 					responseData[PROTOCOL] = Protocol.GAME_STARTED;
 					responseData[POSITION] = -1;
 					responseData[TYPE] = -1;
 					gameStarted = true;
 					server.broadcast(responseData);
-					
-					boolean turn = true;
-					int shape = -1;
-					LinkedList<Integer> positionList = new LinkedList<>();
-					Integer firstPosition = pickPosition(9);
-					positionList.add(firstPosition);
-					int index = 0;
 					while(!isFull()) {
-						shape = turn ==true? 9:8;
-						if(isEmpty()) {
-							chessboard[firstPosition] = shape;
-							
+						shape = flag == true? 9:8;// 8:circle
+						machinePosition = machine.AIposition(flag);
+						if(chessboard[machinePosition] == Protocol.TYPE_NONE) {
+							chessboard[machinePosition] = shape;
 							responseData[PROTOCOL] = Protocol.GAME_UPDATE;
-							responseData[POSITION] = firstPosition;
+							responseData[POSITION] = machinePosition;
 							responseData[TYPE] = shape;
-							turn = !turn;
-							positionList.add(firstPosition);
-							index++;
-						}
-						else {
-							Integer position = machineStrategy(positionList.get(index));
-							if(positionList.contains(position))continue;
-							chessboard[position] = shape;
-							responseData[PROTOCOL] = Protocol.GAME_UPDATE;
-							responseData[POSITION] = position;
-							responseData[TYPE] = shape;
-							turn = !turn;
-							positionList.add(position);
-							index++;
-						}
-						
-						server.broadcast(responseData);
-						Thread.sleep(1000);
-						
-						int result = checkGameResult();
-						responseData[PROTOCOL] = Protocol.GAME_RESULT;
-						responseData[POSITION] = -1;
-						
-						if (result == 1) { // Check whether there's a winner or not
-							responseData[TYPE] = Protocol.GAME_WIN;
+							flag = !flag;
 							server.broadcast(responseData);
+							Thread.sleep(1000);
+							
+							
+							int result = checkGameResult();
+							responseData[PROTOCOL] = Protocol.GAME_RESULT;
+							responseData[POSITION] = -1;
+							
+							if (result == 1) { // Check whether there's a winner or not
+								responseData[TYPE] = Protocol.GAME_WIN;
+								responseData[WINNER] = Protocol.WINNER_MACHINE;
+								server.broadcast(responseData);
 
-							responseData[TYPE] = Protocol.GAME_LOSE;
-							
-							server.broadcast(responseData);
-						}
-						else if (result == 2 && data[PROTOCOL] != Protocol.GAME_JOIN) {
-							
-							System.out.println("TIE");
-							responseData[TYPE] = Protocol.GAME_TIE;
-							
-							server.broadcast(responseData);
-							
+							}
+							else if (result == 2 ) {
+								System.out.println("TIE");
+								responseData[TYPE] = Protocol.GAME_TIE;
+								responseData[WINNER] = Protocol.WINNER_NOBODY;
+								server.broadcast(responseData);
+							}
 						}
 					}
 				break;
-			default:
-				for (int i = 0; i < responseData.length; i++) {
-					responseData[i] = -1;
-				}
-				System.out.println("Default");
-				break;
+				default:
+					for (int i = 0; i < responseData.length; i++) {
+						responseData[i] = -1;
+					}
+					System.out.println("Default");
+					break;
 			}
+
+			
 		}
 	}
 	

@@ -1,4 +1,4 @@
-package com.tic_tac_game;
+package com.tic_tac_game.gui;
 
 import java.awt.Color;
 import java.awt.event.MouseEvent;
@@ -6,6 +6,8 @@ import java.awt.event.MouseListener;
 import java.io.IOException;
 
 import javax.swing.JPanel;
+
+import com.tic_tac_game.Protocol;
 
 public class Tarea extends JPanel implements MouseListener{
 	

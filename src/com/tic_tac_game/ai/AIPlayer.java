@@ -35,43 +35,48 @@ public class AIPlayer {
 	
 	};  
 	
+	private int[] tieClient = {4,2,8,1,3};
+	private int[] tieServer = {5,6,0,7};
+	private int cindex = 0;
+	private int sindex = 0;
+	
+	
+	public int AIposition(boolean flag) {
+		if(flag == true)return tieClient[cindex++];
+		else return tieServer[sindex++];
+	}
+	
 	
 	public int gameState ( int[] board ) {  
 	       int result = INPROGRESS ;  
-	       boolean isFull = true ;
-	       
+	       boolean isFull = isFull(board);
 	       int sum = 0;  
 	       int index = 0;
 	       
-	       // is game over?  
 	       for ( int pos=0; pos<9; pos++){  
 	             int chess = board[pos];  
-	             if ( chess == Protocol.TYPE_NONE){  
-	                  isFull = false ;  
-	            } else {  
-	                  sum += chess;  
-	                  index = pos;  
-	            }  
+                  sum += chess;  
+                  index = pos;  
 	      }  
 	        
-	       boolean isInitial = (sum==Protocol.TYPE_CROSS||sum==Protocol.TYPE_CIRCLE );  
-	       if (isInitial){  
-	             return (sum== CROSS ?1:-1)*INITIAL_POS_VALUE[index];  
+	       boolean isInitial = (sum==Protocol.TYPE_CROSS||sum==Protocol.TYPE_CIRCLE);  
+	       if (isInitial){
+	    	   return (sum== CROSS ?1:-1)*INITIAL_POS_VALUE[index];  
 	      }  
 	        
 	       // is Max win/lose?  
 	       for ( int[]status : WIN_STATUS ){  
 	             int chess = board[status[0]];  
 	             if (chess== Protocol.TYPE_NONE ){  
-	                   break ;  
+	                  continue;  
 	            }  
 	            int i = 1;
 	            for(; i<status.length; i++){  
-                   if (board[status[i]]!=chess)break ;  
+                   if (board[status[i]]!=chess)continue ;  
 	            }  
 	             if (i==status.length){  
 	                  result = chess== Protocol.TYPE_CROSS ? WIN : LOSE ;  
-	                   break ;  
+	                   continue;  
 	            }  
 	      }  
 	        
@@ -121,7 +126,7 @@ public class AIPlayer {
 		}  
 	
 	
-	public   int   minimax( int[] board, int depth){   //depth = 6; max = 8
+	public   int   xminimax( int[] board, int depth){   //depth = 6; max = 8
 	       int [] bestMoves =   new   int [9];  
 	       int   index = 0;  
 	        
@@ -131,7 +136,7 @@ public class AIPlayer {
 	             if (board[pos]== Protocol.TYPE_NONE){  
 	                  board[pos] =  Protocol.TYPE_CROSS ;  
 	                    
-	                   int   value = min(board, depth, - INFINITY , + INFINITY );  
+	                   int   value = max(board, depth, - INFINITY , + INFINITY );  
 	                   if (value>bestValue){  
 	                        bestValue = value;  
 	                        index = 0;  
@@ -150,13 +155,45 @@ public class AIPlayer {
 	       if (index>1){  
 	            index = ( new   Random (System. currentTimeMillis ()).nextInt()>>>1)%index;  
 	      }  
-	       return   bestMoves[index];  
-	        
+	       return   bestMoves[index];      
 	}  
-
-	public   int   max( int [] board,   int   depth,   int   alpha,   int   beta){  
+	
+	public   int   ominimax( int[] board, int depth){   //depth = 6; max = 8
+	       int [] bestMoves =   new   int [9];  
+	       int   index = 0;  
 	        
-	       int   evalValue =   gameState (board);  
+	       int   bestValue = INFINITY ;  
+	       for ( int   pos=0; pos<9; pos++){  
+	              
+	             if (board[pos]== Protocol.TYPE_NONE){  
+	                  board[pos] =  Protocol.TYPE_CROSS ;  
+	                    
+	                   int   value = max(board, depth, - INFINITY , + INFINITY );  
+	                   if (value<bestValue){  
+	                        bestValue = value;  
+	                        index = 0;  
+	                        bestMoves[index] = pos;  
+	                  } else  
+	                   if (value==bestValue){  
+	                        index++;  
+	                        bestMoves[index] = pos;  
+	                  }  
+	                    
+	                  board[pos] = Protocol.TYPE_NONE ;  
+	            }  
+	              
+	      }  
+	        
+	       if (index>1){  
+	            index = ( new   Random (System. currentTimeMillis ()).nextInt()>>>1)%index;  
+	      }  
+	       return   bestMoves[index];      
+	}  
+	
+
+	public int max( int[] board, int depth, int alpha, int beta){  
+	        
+	       int   evalValue = gameState (board);  
 	        
 	       boolean   isGameOver = (evalValue== WIN   || evalValue== LOSE   || evalValue== DRAW );  
 	       if (beta<=alpha){  
@@ -174,7 +211,7 @@ public class AIPlayer {
 	                  board[pos] =  Protocol.TYPE_CROSS ;  
 	                    
 	                   //   maximixing  
-	                  bestValue = Math. max (bestValue, min(board, depth-1, Math. max (bestValue, alpha), beta));  
+	                  bestValue = Math.max(bestValue, min(board, depth-1, Math.max(bestValue, alpha), beta));  
 	                    
 	                   // reset  
 	                  board[pos] =  Protocol.TYPE_NONE;  
@@ -217,5 +254,13 @@ public class AIPlayer {
 	        
 	       return   evalValue;  
 	        
-	}   
+	}  
+	public boolean isFull(int[] chessboard) {
+		for(int i =0; i<chessboard.length; i++) {
+			if(chessboard[i] == Protocol.TYPE_NONE) {
+				return false;
+			}
+		}
+		return true;
+	}
 }

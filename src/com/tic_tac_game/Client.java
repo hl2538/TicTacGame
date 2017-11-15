@@ -10,6 +10,8 @@ import java.util.Scanner;
 
 import javax.swing.JOptionPane;
 
+import com.tic_tac_game.gui.ASC_GUI;
+
 
 public class Client extends Thread {
 	
@@ -17,16 +19,8 @@ public class Client extends Thread {
 	private Socket socket;
 	private DataInputStream input;
 	private DataOutputStream output;
-	private GUI gui;
 	private ASC_GUI aui;
 	private Integer mode;
-	
-	public Client(GUI g, Integer mode) throws IOException {
-		this.mode = mode;
-		active = true;
-		socket = new Socket();
-		gui = g;
-	}
 	
 	public Client() throws IOException{
 		active = true;
@@ -43,24 +37,10 @@ public class Client extends Thread {
 	}
 	
 	
-	/**
-	 * Sets is client to active or not If this client is inactive, then this
-	 * thread will end.
-	 * 
-	 * @param b
-	 *            - active or inactive
-	 */
 	public void setActive(boolean b) {
 		active = b;
 	}
 
-	/**
-	 * Send request to Server
-	 * 
-	 * @param data
-	 *            - the request to be sent.
-	 * @throws IOException
-	 */
 	public void send(int[] data) throws IOException {
 		output.writeByte(1); // Connection test
 		output.write(data.length);
@@ -77,22 +57,18 @@ public class Client extends Thread {
 			init();
 			byte connectionTest;
 			while (active) {
-				if ((connectionTest = input.readByte()) == -1) { // Connection
-																	// test
+				if ((connectionTest = input.readByte()) == -1) {
 					JOptionPane.showMessageDialog(null,
 							"Connection to Server lost!", "Tic-Tac-Toe",
 							JOptionPane.ERROR_MESSAGE);
-					gui.dispose();
 					active = false;
 				} else {
-					if (connectionTest > (byte) 0) { // Pass value to GUI for
-														// updating
+					if (connectionTest > (byte) 0) { 
 						System.out.println("c");
 						int[] data = new int[input.read()];
 						for (int i = 0; i < data.length; i++) {
 							data[i] = input.read();
 						}
-						//gui.update(data);
 						aui.updateGUI(data);
 					}
 				}
@@ -102,13 +78,8 @@ public class Client extends Thread {
 		}
 	}
 
-	/**
-	 * Try to connect to Server.
-	 * 
-	 * @throws IOException
-	 */
 	private void init() throws IOException {
-		socket.connect(new InetSocketAddress(InetAddress.getLocalHost(), 8081));
+		socket.connect(new InetSocketAddress(InetAddress.getLocalHost(), 707));
 		output = new DataOutputStream(socket.getOutputStream());
 		output.flush();
 		input = new DataInputStream(socket.getInputStream());

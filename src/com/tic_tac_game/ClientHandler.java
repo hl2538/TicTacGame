@@ -24,12 +24,6 @@ public class ClientHandler extends Thread {
 		this.server = server;
 	}
 	
-	
-	/**
-	 * Sends data to Client.
-	 * @param data - data to be sent.
-	 * @throws IOException
-	 */
 	public void send(int[] data) throws IOException {
 		output.writeByte(1); //Connection test byte
 		output.write(data.length);
@@ -39,21 +33,10 @@ public class ClientHandler extends Thread {
 		output.flush();
 	}
 	
-	/**
-	 * Decides this ClientHandler is active or not.
-	 * If this ClientHandler is inactive, this Thread will finish and remove itself from Server.
-	 * @param b - true for active, false for inactive
-	 */
 	public void setActive(boolean b) {
 		active = b;
 	}
 	
-	/**
-	 * Main part of this thread.
-	 * If this Handler is active and the Client is not disconnected,
-	 * this Handler will keep receiving and pass data to Server, else,
-	 * this thread will finish and delete itself from Server.
-	 */
 	public void run() {
 		try {
 			byte connectionTest;

@@ -1,4 +1,4 @@
-package com.tic_tac_game;
+package com.tic_tac_game.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Font;
@@ -15,6 +15,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.border.TitledBorder;
+
+import com.tic_tac_game.Client;
+import com.tic_tac_game.Protocol;
 
 
 
@@ -130,9 +133,9 @@ public class ASC_GUI extends JFrame{
 			} else if (type == Protocol.GAME_TIE && winner == Protocol.WINNER_NOBODY) {
 				textArea.setText("Tie");
 				JOptionPane.showMessageDialog(null,
-						"You and your opponent are well-matched!!\nHope you come back again soon!!", "Tic-Tac-Toe",
+						"Tie Game!!", "Tic-Tac-Toe",
 						JOptionPane.INFORMATION_MESSAGE);
-			} else if(type == Protocol.GAME_WIN && winner == Protocol.WINNER_MACHINE) {
+			} else{
 				textArea.setText("Lose");
 				JOptionPane.showMessageDialog(null,
 						"You lose!!\nBut you are still good!!", "Tic-Tac-Toe",
