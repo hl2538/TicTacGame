@@ -51,7 +51,7 @@ public class Server extends Thread {
 				if (active) {
 					
 					Socket s = socket.accept();
-					System.out.println("Server started! Listen on port 707");
+
 					ClientHandler client = new ClientHandler(this, s);
 					clients.add(client);
 					client.start();
@@ -75,6 +75,7 @@ public class Server extends Thread {
 	}
 	
 	public static void main(String[] args) throws IOException {
+		System.out.println("Server started! Listen on port 707");
 		Server server = new Server();
 		server.start();
 	}
